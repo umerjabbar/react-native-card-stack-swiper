@@ -5,7 +5,8 @@ import {
 } from 'react-native';
 
 const Card = ({ style, children }) => (
-  <View style={style} >
+
+  <View style={style}>
     {children}
   </View>);
 

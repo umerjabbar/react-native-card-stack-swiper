@@ -9,6 +9,7 @@ import {
   Text,
   Platform
 } from 'react-native';
+import { useAnimatedScrollHandler } from 'react-native-reanimated';
 
 const { height, width } = Dimensions.get('window');
 
@@ -29,6 +30,7 @@ class CardStack extends Component {
       topCard: 'cardA',
       cards: [],
       touchStart: 0,
+      scrollEnabled: true
     };
     this.distance = this.constructor.distance;
     this._panResponder = PanResponder.create({
@@ -57,6 +59,7 @@ class CardStack extends Component {
         this.setState({ touchStart: new Date().getTime() });
       },
       onPanResponderMove: (evt, gestureState) => {
+        // console.warn("onPanResponderMove")
         const movedX = gestureState.moveX - gestureState.x0;
         const movedY = gestureState.moveY - gestureState.y0;
         this.props.onSwipe(movedX, movedY);
@@ -64,6 +67,7 @@ class CardStack extends Component {
         const dragDistance = this.distance((horizontalSwipe) ? gestureState.dx : 0, (verticalSwipe) ? gestureState.dy : 0);
         this.state.dragDistance.setValue(dragDistance);
         this.state.drag.setValue({ x: (horizontalSwipe) ? gestureState.dx : 0, y: (verticalSwipe) ? gestureState.dy : 0 });
+        this.setState({scrollEnabled: false})
       },
       onPanResponderTerminationRequest: (evt, gestureState) => true,
       onPanResponderRelease: (evt, gestureState) => {
@@ -116,6 +120,7 @@ class CardStack extends Component {
         }
       },
       onPanResponderTerminate: (evt, gestureState) => {
+        this._resetCard();
       },
       onShouldBlockNativeResponder: (evt, gestureState) => {
         return true;
@@ -141,9 +146,9 @@ class CardStack extends Component {
     }
   }
 
-  _getIndex(index, cards){
-    return this.props.loop ? 
-      this.mod(index, cards):
+  _getIndex(index, cards) {
+    return this.props.loop ?
+      this.mod(index, cards) :
       index;
   }
 
@@ -188,7 +193,7 @@ class CardStack extends Component {
       {
         toValue: 0,
         duration: this.props.duration,
-        useNativeDriver: this.props.useNativeDriver || false,
+        useNativeDriver: true
       }
     ).start();
     Animated.spring(
@@ -196,9 +201,10 @@ class CardStack extends Component {
       {
         toValue: { x: 0, y: 0 },
         duration: this.props.duration,
-        useNativeDriver: this.props.useNativeDriver || false,
+        useNativeDriver: true
       }
     ).start();
+    this.setState({scrollEnabled: true})
   }
 
   goBackFromTop() {
@@ -222,6 +228,7 @@ class CardStack extends Component {
   }
 
   _goBack(direction) {
+    this.setState({scrollEnabled: true})
     const { cards, sindex, topCard } = this.state;
 
     if ((sindex - 3) < 0 && !this.props.loop) return;
@@ -273,7 +280,7 @@ class CardStack extends Component {
         {
           toValue: 0,
           duration: this.props.duration,
-          useNativeDriver: this.props.useNativeDriver || false,
+          useNativeDriver: true
         }
       ).start();
 
@@ -282,7 +289,7 @@ class CardStack extends Component {
         {
           toValue: { x: 0, y: 0 },
           duration: this.props.duration,
-          useNativeDriver: this.props.useNativeDriver || false,
+          useNativeDriver: true
         }
       ).start();
     })
@@ -305,6 +312,7 @@ class CardStack extends Component {
   }
 
   _nextCard(direction, x, y, duration = 400) {
+    this.setState({scrollEnabled: true})
     const { verticalSwipe, horizontalSwipe, loop } = this.props;
     const { sindex, cards, topCard } = this.state;
 
@@ -324,7 +332,7 @@ class CardStack extends Component {
         {
           toValue: 220,
           duration,
-          useNativeDriver: this.props.useNativeDriver || false,
+          useNativeDriver: true
         }
       ).start();
 
@@ -333,7 +341,7 @@ class CardStack extends Component {
         {
           toValue: { x: (horizontalSwipe) ? x : 0, y: (verticalSwipe) ? y : 0 },
           duration,
-          useNativeDriver: this.props.useNativeDriver || false,
+          useNativeDriver: true
         }
       ).start(() => {
 
@@ -389,12 +397,11 @@ class CardStack extends Component {
     }
   }
 
-
   /**
    * @description CardB’s click feature is trigger the CardA on the card stack. (Solved on Android)
    * @see https://facebook.github.io/react-native/docs/view#pointerevents
    */
-  _setPointerEvents(topCard, topCardName) {
+  _setPointerEvents(topCard, topCardName, drag) {
     return { pointerEvents: topCard === topCardName ? "auto" : "none" }
   }
 
@@ -404,10 +411,11 @@ class CardStack extends Component {
     const { drag, dragDistance, cardA, cardB, topCard, sindex } = this.state;
 
     const scale = dragDistance.interpolate({
-      inputRange: [0, 10, 220],
+      inputRange: [0, 100, 220],
       outputRange: [secondCardZoom, secondCardZoom, 1],
       extrapolate: 'clamp',
     });
+
     const rotate = drag.x.interpolate({
       inputRange: [width * -1.5, 0, width * 1.5],
       outputRange: this.props.outputRotationRange,
@@ -419,10 +427,18 @@ class CardStack extends Component {
 
         {renderNoMoreCards()}
 
-        <Animated.View
-          {...this._setPointerEvents(topCard, 'cardB')}
+        <Animated.ScrollView
+          {...this._setPointerEvents(topCard, 'cardB', rotate)}
+          scrollEnabled={this.state.scrollEnabled}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
           style={[{
             position: 'absolute',
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            // backgroundColor: 'blue',
             zIndex: (topCard === 'cardB') ? 3 : 2,
             ...Platform.select({
               android: {
@@ -437,11 +453,19 @@ class CardStack extends Component {
             ]
           }, this.props.cardContainerStyle]}>
           {cardB}
-        </Animated.View>
-        <Animated.View
+        </Animated.ScrollView>
+        <Animated.ScrollView
           {...this._setPointerEvents(topCard, 'cardA')}
+          scrollEnabled={this.state.scrollEnabled}
+          bounces={false}
+          showsVerticalScrollIndicator={false}
           style={[{
             position: 'absolute',
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            // backgroundColor: '#84736255',
             zIndex: (topCard === 'cardA') ? 3 : 2,
             ...Platform.select({
               android: {
@@ -456,7 +480,7 @@ class CardStack extends Component {
             ]
           }, this.props.cardContainerStyle]}>
           {cardA}
-        </Animated.View>
+        </Animated.ScrollView>
 
       </View>
     );
