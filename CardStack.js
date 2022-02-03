@@ -43,7 +43,7 @@ class CardStack extends Component {
         if (!this.props.verticalSwipe && isVerticalSwipe) {
           return false
         }
-        return Math.sqrt(Math.pow(gestureState.dx, 2) + Math.pow(gestureState.dy, 2)) > 10
+        return Math.sqrt(Math.pow(gestureState.dx, 2) + Math.pow(gestureState.dy, 2)) > 2
       },
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
         const isVerticalSwipe = Math.sqrt(
@@ -52,7 +52,7 @@ class CardStack extends Component {
         if (!this.props.verticalSwipe && isVerticalSwipe) {
           return false
         }
-        return Math.sqrt(Math.pow(gestureState.dx, 2) + Math.pow(gestureState.dy, 2)) > 10
+        return Math.sqrt(Math.pow(gestureState.dx, 2) + Math.pow(gestureState.dy, 2)) > 2
       },
       onPanResponderGrant: (evt, gestureState) => {
         this.props.onSwipeStart();
