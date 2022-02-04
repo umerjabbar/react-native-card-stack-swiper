@@ -432,7 +432,7 @@ class CardStack extends Component {
           {...this._setPointerEvents(topCard, 'cardB', rotate)}
           scrollEnabled={this.state.scrollEnabled}
           showsVerticalScrollIndicator={false}
-          bounces={false}
+          bounces={true}
           style={[{
             position: 'absolute',
             top: 0,
@@ -458,7 +458,7 @@ class CardStack extends Component {
         <Animated.ScrollView
           {...this._setPointerEvents(topCard, 'cardA')}
           scrollEnabled={this.state.scrollEnabled}
-          bounces={false}
+          bounces={true}
           showsVerticalScrollIndicator={false}
           style={[{
             position: 'absolute',
