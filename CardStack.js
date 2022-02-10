@@ -428,60 +428,120 @@ class CardStack extends Component {
 
         {renderNoMoreCards()}
 
-        <Animated.ScrollView
-          {...this._setPointerEvents(topCard, 'cardB', rotate)}
-          scrollEnabled={this.state.scrollEnabled}
-          showsVerticalScrollIndicator={false}
-          bounces={true}
-          style={[{
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            right: 0,
-            left: 0,
-            // backgroundColor: 'blue',
-            zIndex: (topCard === 'cardB') ? 3 : 2,
-            ...Platform.select({
-              android: {
-                elevation: (topCard === 'cardB') ? 3 : 2,
-              }
-            }),
-            transform: [
-              { rotate: (topCard === 'cardB') ? rotate : '0deg' },
-              { translateX: (topCard === 'cardB') ? drag.x : 0 },
-              { translateY: (topCard === 'cardB') ? drag.y : 0 },
-              { scale: (topCard === 'cardB') ? 1 : scale },
-            ]
-          }, this.props.cardContainerStyle]}>
-          {cardB}
-        </Animated.ScrollView>
-        <Animated.ScrollView
-          {...this._setPointerEvents(topCard, 'cardA')}
-          scrollEnabled={this.state.scrollEnabled}
-          bounces={true}
-          showsVerticalScrollIndicator={false}
-          style={[{
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            right: 0,
-            left: 0,
-            // backgroundColor: '#84736255',
-            zIndex: (topCard === 'cardA') ? 3 : 2,
-            ...Platform.select({
-              android: {
-                elevation: (topCard === 'cardA') ? 3 : 2,
-              }
-            }),
-            transform: [
-              { rotate: (topCard === 'cardA') ? rotate : '0deg' },
-              { translateX: (topCard === 'cardA') ? drag.x : 0 },
-              { translateY: (topCard === 'cardA') ? drag.y : 0 },
-              { scale: (topCard === 'cardA') ? 1 : scale },
-            ]
-          }, this.props.cardContainerStyle]}>
-          {cardA}
-        </Animated.ScrollView>
+        {Platform.OS === 'android' &&
+          <Animated.View
+            {...this._setPointerEvents(topCard, 'cardB', rotate)}
+            showsVerticalScrollIndicator={false}
+            bounces={true}
+            style={[{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              right: 0,
+              left: 0,
+              // backgroundColor: 'blue',
+              zIndex: (topCard === 'cardB') ? 3 : 2,
+              ...Platform.select({
+                android: {
+                  elevation: (topCard === 'cardB') ? 3 : 2,
+                }
+              }),
+              transform: [
+                { rotate: (topCard === 'cardB') ? rotate : '0deg' },
+                { translateX: (topCard === 'cardB') ? drag.x : 0 },
+                { translateY: (topCard === 'cardB') ? drag.y : 0 },
+                { scale: (topCard === 'cardB') ? 1 : scale },
+              ]
+            }, this.props.cardContainerStyle]}>
+            {cardB}
+          </Animated.View>
+        }
+        {Platform.OS === 'android' &&
+          <Animated.View
+            {...this._setPointerEvents(topCard, 'cardA')}
+            bounces={true}
+            showsVerticalScrollIndicator={false}
+            style={[{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              right: 0,
+              left: 0,
+              // backgroundColor: '#84736255',
+              zIndex: (topCard === 'cardA') ? 3 : 2,
+              ...Platform.select({
+                android: {
+                  elevation: (topCard === 'cardA') ? 3 : 2,
+                }
+              }),
+              transform: [
+                { rotate: (topCard === 'cardA') ? rotate : '0deg' },
+                { translateX: (topCard === 'cardA') ? drag.x : 0 },
+                { translateY: (topCard === 'cardA') ? drag.y : 0 },
+                { scale: (topCard === 'cardA') ? 1 : scale },
+              ]
+            }, this.props.cardContainerStyle]}>
+            {cardA}
+          </Animated.View>
+        }
+
+        {Platform.OS !== 'android' &&
+          <Animated.ScrollView
+            {...this._setPointerEvents(topCard, 'cardB', rotate)}
+            scrollEnabled={this.state.scrollEnabled}
+            showsVerticalScrollIndicator={false}
+            bounces={true}
+            style={[{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              right: 0,
+              left: 0,
+              // backgroundColor: 'blue',
+              zIndex: (topCard === 'cardB') ? 3 : 2,
+              ...Platform.select({
+                android: {
+                  elevation: (topCard === 'cardB') ? 3 : 2,
+                }
+              }),
+              transform: [
+                { rotate: (topCard === 'cardB') ? rotate : '0deg' },
+                { translateX: (topCard === 'cardB') ? drag.x : 0 },
+                { translateY: (topCard === 'cardB') ? drag.y : 0 },
+                { scale: (topCard === 'cardB') ? 1 : scale },
+              ]
+            }, this.props.cardContainerStyle]}>
+            {cardB}
+          </Animated.ScrollView>
+        }
+        {Platform.OS !== 'android' &&
+          <Animated.ScrollView
+            {...this._setPointerEvents(topCard, 'cardA')}
+            scrollEnabled={this.state.scrollEnabled}
+            bounces={true}
+            showsVerticalScrollIndicator={false}
+            style={[{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              right: 0,
+              left: 0,
+              zIndex: (topCard === 'cardA') ? 3 : 2,
+              ...Platform.select({
+                android: {
+                  elevation: (topCard === 'cardA') ? 3 : 2,
+                }
+              }),
+              transform: [
+                { rotate: (topCard === 'cardA') ? rotate : '0deg' },
+                { translateX: (topCard === 'cardA') ? drag.x : 0 },
+                { translateY: (topCard === 'cardA') ? drag.y : 0 },
+                { scale: (topCard === 'cardA') ? 1 : scale },
+              ]
+            }, this.props.cardContainerStyle]}>
+            {cardA}
+          </Animated.ScrollView>
+        }
 
       </View>
     );
