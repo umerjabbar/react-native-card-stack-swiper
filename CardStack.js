@@ -38,6 +38,9 @@ class CardStack extends Component {
         const isVerticalSwipe = Math.sqrt(
           Math.pow(gestureState.dx, 2) < Math.pow(gestureState.dy, 2)
         )
+        if (Platform.OS === 'android') {
+          return false
+        }
         if (!this.props.verticalSwipe && isVerticalSwipe) {
           return false
         }
@@ -47,6 +50,9 @@ class CardStack extends Component {
         const isVerticalSwipe = Math.sqrt(
           Math.pow(gestureState.dx, 2) < Math.pow(gestureState.dy, 2)
         )
+        if (Platform.OS === 'android') {
+          return false
+        }
         if (!this.props.verticalSwipe && isVerticalSwipe) {
           return false
         }
