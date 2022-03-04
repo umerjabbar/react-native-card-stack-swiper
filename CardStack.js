@@ -9,7 +9,6 @@ import {
   Text,
   Platform
 } from 'react-native';
-import { useAnimatedScrollHandler } from 'react-native-reanimated';
 
 const { height, width } = Dimensions.get('window');
 
@@ -29,8 +28,7 @@ class CardStack extends Component {
       cardB: null,
       topCard: 'cardA',
       cards: [],
-      touchStart: 0,
-      scrollEnabled: true
+      touchStart: 0
     };
     this.distance = this.constructor.distance;
     this._panResponder = PanResponder.create({
@@ -67,7 +65,6 @@ class CardStack extends Component {
         const dragDistance = this.distance((horizontalSwipe) ? gestureState.dx : 0, (verticalSwipe) ? gestureState.dy : 0);
         this.state.dragDistance.setValue(dragDistance);
         this.state.drag.setValue({ x: (horizontalSwipe) ? gestureState.dx : 0, y: (verticalSwipe) ? gestureState.dy : 0 });
-        this.setState({ scrollEnabled: false })
       },
       onPanResponderTerminationRequest: (evt, gestureState) => true,
       onPanResponderRelease: this.didTerminateOrRelease,
@@ -205,7 +202,6 @@ class CardStack extends Component {
         useNativeDriver: true
       }
     ).start();
-    this.setState({ scrollEnabled: true })
   }
 
   goBackFromTop() {
@@ -229,7 +225,6 @@ class CardStack extends Component {
   }
 
   _goBack(direction) {
-    this.setState({ scrollEnabled: true })
     const { cards, sindex, topCard } = this.state;
 
     if ((sindex - 3) < 0 && !this.props.loop) return;
@@ -313,7 +308,6 @@ class CardStack extends Component {
   }
 
   _nextCard(direction, x, y, duration = 400) {
-    this.setState({ scrollEnabled: true })
     const { verticalSwipe, horizontalSwipe, loop } = this.props;
     const { sindex, cards, topCard } = this.state;
 
@@ -428,121 +422,58 @@ class CardStack extends Component {
 
         {renderNoMoreCards()}
 
-        {Platform.OS === 'android' &&
-          <Animated.View
-            {...this._setPointerEvents(topCard, 'cardB', rotate)}
-            showsVerticalScrollIndicator={false}
-            bounces={true}
-            style={[{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              right: 0,
-              left: 0,
-              // backgroundColor: 'blue',
-              zIndex: (topCard === 'cardB') ? 3 : 2,
-              ...Platform.select({
-                android: {
-                  elevation: (topCard === 'cardB') ? 3 : 2,
-                }
-              }),
-              transform: [
-                { rotate: (topCard === 'cardB') ? rotate : '0deg' },
-                { translateX: (topCard === 'cardB') ? drag.x : 0 },
-                { translateY: (topCard === 'cardB') ? drag.y : 0 },
-                { scale: (topCard === 'cardB') ? 1 : scale },
-              ]
-            }, this.props.cardContainerStyle]}>
-            {cardB}
-          </Animated.View>
-        }
-        {Platform.OS === 'android' &&
-          <Animated.View
-            {...this._setPointerEvents(topCard, 'cardA')}
-            bounces={true}
-            showsVerticalScrollIndicator={false}
-            style={[{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              right: 0,
-              left: 0,
-              // backgroundColor: '#84736255',
-              zIndex: (topCard === 'cardA') ? 3 : 2,
-              ...Platform.select({
-                android: {
-                  elevation: (topCard === 'cardA') ? 3 : 2,
-                }
-              }),
-              transform: [
-                { rotate: (topCard === 'cardA') ? rotate : '0deg' },
-                { translateX: (topCard === 'cardA') ? drag.x : 0 },
-                { translateY: (topCard === 'cardA') ? drag.y : 0 },
-                { scale: (topCard === 'cardA') ? 1 : scale },
-              ]
-            }, this.props.cardContainerStyle]}>
-            {cardA}
-          </Animated.View>
-        }
+        <Animated.ScrollView
+          {...this._setPointerEvents(topCard, 'cardB', rotate)}
+          showsVerticalScrollIndicator={false}
+          bounces={true}
+          style={[{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            // backgroundColor: 'blue',
+            zIndex: (topCard === 'cardB') ? 3 : 2,
+            ...Platform.select({
+              android: {
+                elevation: (topCard === 'cardB') ? 3 : 2,
+              }
+            }),
+            transform: [
+              { rotate: (topCard === 'cardB') ? rotate : '0deg' },
+              { translateX: (topCard === 'cardB') ? drag.x : 0 },
+              { translateY: (topCard === 'cardB') ? drag.y : 0 },
+              { scale: (topCard === 'cardB') ? 1 : scale },
+            ]
+          }, this.props.cardContainerStyle]}>
+          {cardB}
+        </Animated.ScrollView>
 
-        {Platform.OS !== 'android' &&
-          <Animated.ScrollView
-            {...this._setPointerEvents(topCard, 'cardB', rotate)}
-            scrollEnabled={this.state.scrollEnabled}
-            showsVerticalScrollIndicator={false}
-            bounces={true}
-            style={[{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              right: 0,
-              left: 0,
-              // backgroundColor: 'blue',
-              zIndex: (topCard === 'cardB') ? 3 : 2,
-              ...Platform.select({
-                android: {
-                  elevation: (topCard === 'cardB') ? 3 : 2,
-                }
-              }),
-              transform: [
-                { rotate: (topCard === 'cardB') ? rotate : '0deg' },
-                { translateX: (topCard === 'cardB') ? drag.x : 0 },
-                { translateY: (topCard === 'cardB') ? drag.y : 0 },
-                { scale: (topCard === 'cardB') ? 1 : scale },
-              ]
-            }, this.props.cardContainerStyle]}>
-            {cardB}
-          </Animated.ScrollView>
-        }
-        {Platform.OS !== 'android' &&
-          <Animated.ScrollView
-            {...this._setPointerEvents(topCard, 'cardA')}
-            scrollEnabled={this.state.scrollEnabled}
-            bounces={true}
-            showsVerticalScrollIndicator={false}
-            style={[{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              right: 0,
-              left: 0,
-              zIndex: (topCard === 'cardA') ? 3 : 2,
-              ...Platform.select({
-                android: {
-                  elevation: (topCard === 'cardA') ? 3 : 2,
-                }
-              }),
-              transform: [
-                { rotate: (topCard === 'cardA') ? rotate : '0deg' },
-                { translateX: (topCard === 'cardA') ? drag.x : 0 },
-                { translateY: (topCard === 'cardA') ? drag.y : 0 },
-                { scale: (topCard === 'cardA') ? 1 : scale },
-              ]
-            }, this.props.cardContainerStyle]}>
-            {cardA}
-          </Animated.ScrollView>
-        }
-
+        <Animated.ScrollView
+          {...this._setPointerEvents(topCard, 'cardA')}
+          bounces={true}
+          showsVerticalScrollIndicator={false}
+          style={[{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            zIndex: (topCard === 'cardA') ? 3 : 2,
+            ...Platform.select({
+              android: {
+                elevation: (topCard === 'cardA') ? 3 : 2,
+              }
+            }),
+            transform: [
+              { rotate: (topCard === 'cardA') ? rotate : '0deg' },
+              { translateX: (topCard === 'cardA') ? drag.x : 0 },
+              { translateY: (topCard === 'cardA') ? drag.y : 0 },
+              { scale: (topCard === 'cardA') ? 1 : scale },
+            ]
+          }, this.props.cardContainerStyle]}>
+          {cardA}
+        </Animated.ScrollView>
       </View>
     );
   }
