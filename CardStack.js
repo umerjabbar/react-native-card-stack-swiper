@@ -428,7 +428,7 @@ class CardStack extends Component {
 
         {renderNoMoreCards()}
 
-        <Animated.ScrollView
+        <Animated.View
           {...this._setPointerEvents(topCard, 'cardB', rotate)}
           showsVerticalScrollIndicator={false}
           bounces={true}
@@ -453,9 +453,9 @@ class CardStack extends Component {
             ]
           }, this.props.cardContainerStyle]}>
           {cardB}
-        </Animated.ScrollView>
+        </Animated.View>
 
-        <Animated.ScrollView
+        <Animated.View
           {...this._setPointerEvents(topCard, 'cardA')}
           bounces={true}
           showsVerticalScrollIndicator={false}
@@ -479,7 +479,7 @@ class CardStack extends Component {
             ]
           }, this.props.cardContainerStyle]}>
           {cardA}
-        </Animated.ScrollView>
+        </Animated.View>
       </View>
     );
   }
